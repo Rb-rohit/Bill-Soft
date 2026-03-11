@@ -137,6 +137,7 @@ exports.getAllSales = async (req, res) => {
         }
     };
 
+    // download invoice
     exports.downloadInvoice = async (req, res) => {
         try {
             const sale = await Sale.findById(req.params.id);
@@ -156,6 +157,7 @@ exports.getAllSales = async (req, res) => {
         }
     };
 
+    // get today sale
     exports.getTodaySales = async (req, res) => {
         try {
             const start = new Date();
@@ -181,6 +183,60 @@ exports.getAllSales = async (req, res) => {
         } catch (error) {
             res.status(500).json({
                 messsage:error.message
+            });
+        }
+    };
+
+    // get recent sales
+    exports.getRecentSales = async (req, res) => {
+        try {
+            const sales = await Sale.find()
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .select("customerName grandTotal createdAt");
+            
+            res.json({
+                sales
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            });
+        }
+    };
+
+    // weekly sale
+    exports.getWeeklySales = async (req, res) => {
+        try {
+
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            
+            const sales = await Sale.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: lastWeek
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $dayOfWeek: "$createdAt"},
+                        totalSales: { $sum: "$grandTotal" }
+                    }
+                },
+                {
+                    $sort: { _id: 1 }
+                }
+                
+            ]);
+
+            res.json(sales);
+        } catch (error) {
+            console.error("Weekly Sales Error:", error);
+            res.status(500).json({
+                message: error.message
             });
         }
     };

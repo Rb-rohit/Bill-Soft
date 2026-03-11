@@ -80,13 +80,15 @@ const Products = () => {
 
 
   // delete product
-  const handleDelete = async (_id) => {
-    if (!window.confirm("Delete this product?")) return;
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm("Delete this product?");
+    if (!confirmDelete) return;
 
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-      `http://localhost:5000/api/products/${_id}`,
+      `http://localhost:5000/api/products/${id}`,
       { headers: {Authorization: `Bearer ${token}`} }
     );
 
@@ -104,7 +106,7 @@ const Products = () => {
       </h2>
 
       {/* form  */}
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit}>
         <input 
           name='name'
           placeholder='Product Name'
@@ -145,42 +147,50 @@ const Products = () => {
       </form>
 
       {/* Table  */}
-      <table style={styles.table}>
-        <thead>
+      <div className='bg-white shadow rounded-xl overflow-hidden mt-6'>
+        <table className='w-full text-sm text-left'>
+        <thead className=' bg-gray-100 text-gray-600 uppercase text-xs'>
           <tr>
-            <th>Name</th>
-            <th>Barcode</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Actions</th>
+            <th className='px-6 py-3'>Product</th>
+            <th className='px-6 py-3'>Barcode</th>
+            <th className='px-6 py-3'>Price</th>
+            <th className='px-6 py-3'>Stock</th>
+            <th className='px-6 py-3 text-right'>Actions</th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className='divide-y'>
           {products.map((p) => (
             <tr 
               key={p._id}
-              style={{
-                backgroundColor:
-                  p.lowStockLimit && p.stock <= p.lowStockLimit ? "#ffe5e5" : "white"
-              }}
+              className={`hover:bg-gray-50 ${
+                p.lowStockLimit && p.stock <= p.lowStockLimit
+                  ? "bg-red-50" 
+                  : ""
+              }`}
             >
-              <td>{p.name}</td>
-              <td>{p.barcode}</td>
-              <td>₹{p.price}</td>
-              <td>
-                {p.stock}
+              <td className='px-6 py-4 font-medium text-gray-800'>{p.name}</td>
+              <td className='px-6 py-4 text-gray-600'>{p.barcode}</td>
+              <td className='px-6 py-4 font-semibold text-indigo-600'>₹{p.price}</td>
+              <td className='px-6 py-4'>
+              <span className='font-medium'>{p.stock}</span>
+                
                 {p.stock <= p.lowStockLimit && (
-                  <span style={{ color: "red", marginLeft: "5px" }}>
+                  <span className='ml-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded'>
                     ⚠ Low
                   </span>
                 )}
               </td>
-              <td>
-                <button onClick={()=> handleEdit(p)}>Edit</button>
+              <td className='px-6 py-4 text-right'>
                 <button 
-                  style={{ marginLeft: "10px", color: "red"}}
+                  onClick={()=> handleEdit(p)}
+                  className='text-blue-600 hover:underline'
+                >
+                  Edit
+                </button>
+                <button 
                   onClick={() => handleDelete(p._id)}
+                  className='ml-4 text-red-600 hover:underline'
                 >
                   Delete
                 </button>
@@ -189,23 +199,37 @@ const Products = () => {
           ))}
         </tbody>
       </table>
+      </div>
+      
 
       {/* pagination Button  */}
-      <div style={{ marginTop: "20px" }}>
+      <div className='flex items-center justify-between mt-6'>
         <button
           disabled={page === 1}
           onClick={() => setPage(prev => prev - 1)}
+          className={`px-4 py-2 rounded-lg border
+          ${page === 1
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-white hover:bg-gray-100"
+          }
+          `}
         >
           Previous
         </button>
 
-        <span style={{ margin: "0 10px" }}>
+        <span className='text-gray-600 font-medium' >
           Page {page} of {pages}
         </span>
 
         <button
           disabled={page === pages}
-          onClick={() => setPage(prev => prev + 1)}>
+          onClick={() => setPage(prev => prev + 1)}
+          className={`px-4 py-2 rounded-lg border
+          ${page === pages
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-white hover:bg-gray-100"}
+          `}
+        >
             Next
           </button>
       </div>
@@ -213,16 +237,5 @@ const Products = () => {
   );
 }
 
-const styles = {
-  form: {
-    display: "flex",
-    gap: "10px",
-    marginBottom: "20px"
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse"
-  }
-};
 
 export default Products

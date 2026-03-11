@@ -5,6 +5,7 @@ import Billing from "../pages/Billing";
 import Products from "../pages/Products";
 import { AuthProvider } from "../components/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
+import SalesHistory from "../pages/SalesHistory";
 
 
 
@@ -38,6 +39,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Products />
+              </ProtectedRoute>
+              } 
+            />
+            <Route 
+            path="/sales-history" 
+            element={
+              <ProtectedRoute>
+                <SalesHistory />
               </ProtectedRoute>
               } 
             />
