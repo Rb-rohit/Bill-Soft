@@ -6,16 +6,30 @@ const mongoose = require("mongoose");
 // get/api/dashboard/stats
 exports.getDashboardStats = async (req, res) => {
     try {
+
+        const { fromDate, toDate } = req.query;
+
+        let match = {};
+
+        if (fromDate && toDate) {
+            match.createdAt = {
+                $gte: new Date(fromDate),
+                $lte: new Date(toDate)
+            };
+        }
+
+
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999);
 
+        //today sales chart
         const todaySales = await Sale.aggregate([
             {
                 $match: {
-                    createAt: { $gte: todayStart, $lte: todayEnd }
+                    createdAt: { $gte: todayStart, $lte: todayEnd }
                 }
             },
             {
@@ -45,12 +59,17 @@ exports.getDashboardStats = async (req, res) => {
         const dailySales = await Sale.aggregate([
             {
                 $match: {
-                    createAt: { $gte: last7Days }
+                    createdAt: { $gte: last7Days }
                 }
             },
             {
                 $group: {
-                    _id: { $dayOfMonth: "$createdAt" },
+                    _id: {
+                            $dateToString: {
+                                format: "%Y-%m-%d",
+                                date: "$createdAt"
+                            }
+                        },
                     revenue: { $sum: "$grandTotal" }
                 }
             },
@@ -67,5 +86,25 @@ exports.getDashboardStats = async (req, res) => {
         res.status(500).json({
             message: error.message
         });
+    }
+};
+
+// payment Report
+exports.getPaymentReport = async (req, res) => {
+    try {
+
+        const payments = await Sale.aggregate([
+            {
+                $group: {
+                    _id: "$paymentMethod",
+                    total: { $sum: "$grandTotal" }
+                }
+            }
+        ]);
+
+        res.json(payments);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

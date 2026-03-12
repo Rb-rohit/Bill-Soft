@@ -18,7 +18,7 @@ const ProductList = ({ addToCart}) => {
                         }
                     }
                 );
-
+                
                 setProduct(res.data.products || []);
             }  catch (error) {
                 console.log(error.response?.data || error.message);

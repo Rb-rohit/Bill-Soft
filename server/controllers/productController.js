@@ -22,22 +22,14 @@ exports.createProduct = async (req, res) => {
 // get all products
 exports.getProducts = async (req, res) => {
     try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 5;
-        const skip = (page - 1) * limit;
-
         const total = await Product.countDocuments();
 
         const products = await Product.find({ isActive: true})
-            .skip(skip)
-            .limit(limit)
             .sort({ createdAt: -1});
 
         res.json({
             products,
             total,
-            page,
-            pages: Math.ceil(total / limit)
         });
 
     }catch (error) {

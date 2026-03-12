@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 
 const SalesHistory = () => {
     const [sales, setSales] = useState([]);
+    const [search, setSearch] = useState("");
+    const [filter, setFilter] = useState("all")
+
 
     const fetchSales = async () => {
         try {
@@ -25,12 +28,115 @@ const SalesHistory = () => {
         fetchSales();
     }, []);
 
+    // search
+
+    const now = new Date();
+    const filteredSales = sales.filter((sale) => {
+        sale.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
+        sale.customerName.toLowerCase().includes(search.toLowerCase())
+
+        const saleDate = new Date(sale.createdAt);
+
+        if (filter === "today") {
+            return saleDate.toDateString() === now.toDateString();
+        }
+
+        if (filter === "week") {
+            const weekAgo = new Date();
+            weekAgo.setDate(now.getDate() - 7);
+            return saleDate >= weekAgo;
+        }
+
+        if (filter === "month") {
+            return(
+                saleDate.getMonth() === now.getMonth() &&
+                saleDate.getFullYear() === now.getFullYear()
+            );
+        }
+
+        return true;
+    });
+
+    
+    
+    
+
+    // total revenue
+    const totalRevenue = filteredSales.reduce(
+        (sum, sale) => sum + (sale.grandTotal || 0),
+        0
+    );
+
+    const totalOrders = filteredSales.length;
+    
+
     return (
         <div className="p-6">
 
             <h2 className="text-2xl font-bold mb-4">
                 Sales History
             </h2>
+
+            <div className=" flex mb-4">
+                <input 
+                    type="text"
+                    placeholder="Search invoice or customer..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="border p-2 rounded w-full"
+                />
+
+            </div>
+            <div className="flex gap-4 mb-4">
+                <button
+                    onClick={() => setFilter("today")}
+                    className="px-3 py-1 bg-blue-500 text-white rounded"
+                >
+                    Today
+                </button>
+
+                <button
+                    onClick={() => setFilter("week")}
+                    className="px-3 py-1 bg-green-500 text-white rounded"
+                >
+                    This Week
+                </button>
+
+                <button
+                    onClick={() => setFilter("month")}
+                    className="px-3 py-1 bg-purple-500 text-white rounded"
+                >
+                    This Month
+                </button>
+
+                <button
+                    onClick={() => setFilter("all")}
+                    className="px-3 py-1 bg-gray-500 text-white rounded"
+                >
+                    All
+                </button>
+            </div>
+
+            <div className="flex gap-4 mb-4">
+
+                <div className="bg-white shadow p-4 rounded w-48">
+                    <p className="text-gray-500 text-sm">
+                        Total Revenue
+                    </p>
+                    <h2 className="text-xl font-bold text-green-600">
+                        ₹{totalRevenue}
+                    </h2>
+                </div>
+
+                <div className="bg-white shadow p-4 rounded w-48">
+                    <p className="text-gray-500 text-sm">
+                        Order
+                    </p>
+                    <h2>
+                        {totalOrders}
+                    </h2>
+                </div>
+            </div>
 
             <div className="overflow-x-auto">
 
@@ -49,7 +155,7 @@ const SalesHistory = () => {
 
                 <tbody>
 
-                {sales.map((sale) => (
+                {filteredSales.map((sale) => (
                     <tr
                         key={sale._id}
                         className="border-t hover:bg-gray-50"

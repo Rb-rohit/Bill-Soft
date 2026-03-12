@@ -6,6 +6,7 @@ import Products from "../pages/Products";
 import { AuthProvider } from "../components/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
 import SalesHistory from "../pages/SalesHistory";
+import Reports from "../pages/Reports";
 
 
 
@@ -47,6 +48,15 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <SalesHistory />
+              </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+            path="/report" 
+            element={
+              <ProtectedRoute>
+                <Reports />
               </ProtectedRoute>
               } 
             />

@@ -26,7 +26,7 @@ const Sidebar = () => {
                 </li>
 
                 <li className="flex items-center gap-3 hover:text-yellow-400 cursor-pointer">
-                    <BarChart3 size={20} /> Reports
+                    <Link to={"/report"} className="flex gap-3"><BarChart3 size={20} /> Reports</Link>
                 </li>
 
                 <li className="flex items-center gap-3 hover:text-yellow-400 cursor-pointer">

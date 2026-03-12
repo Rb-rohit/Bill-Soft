@@ -37,13 +37,15 @@ const RecentBills = () => {
 
                 <tbody>
                     {sales.map((sale) => {
+                        return (
                         <tr key={sale._id} className="border-b hover:bg-gray-50">
                             <td className="py-2">{sale.customerName}</td>
-                            <td>₹{sale.totalamount}</td>
+                            <td>₹{sale.grandTotal}</td>
                             <td>
                                 {new Date(sale.createdAt).toLocaleDateString()}
                             </td>
                         </tr>
+                    );
                     })}
                 </tbody>
             </table>
