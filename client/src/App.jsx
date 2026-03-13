@@ -7,6 +7,7 @@ import { AuthProvider } from "../components/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
 import SalesHistory from "../pages/SalesHistory";
 import Reports from "../pages/Reports";
+import Settings from "../pages/Settings";
 
 
 
@@ -57,6 +58,15 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
               } 
             />

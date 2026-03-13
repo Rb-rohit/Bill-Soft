@@ -24,10 +24,19 @@ const DashboardCards = () => {
     useEffect(() => {
         const fetchReport = async () => {
             try {
+                const token = localStorage.getItem("token");
                 const res = await axios.get(
-                    "http://localhost:5000/api/sales/today/report"
+                    "http://localhost:5000/api/dashboard/stats",
+                    {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
                 );
-                setReport(res.data);
+                setReport({
+                    revenue: res.data.today.totalRevenue,
+                    orders: res.data.today.totalBills
+                });
             } catch (error) {
                 console.log(error.response?.data || error.message);
             }

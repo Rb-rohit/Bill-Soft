@@ -129,7 +129,10 @@ exports.getAllSales = async (req, res) => {
                 });
             }
 
-            res.json(sale);
+            res.json({
+                success: true,
+                sales
+            });
         } catch (error) {
             res.status(500).json({
                 message: "Server error",
@@ -158,34 +161,34 @@ exports.getAllSales = async (req, res) => {
     };
 
     // get today sale
-    exports.getTodaySales = async (req, res) => {
-        try {
-            const start = new Date();
-            start.setHours(0, 0, 0, 0);
+    // exports.getTodaySales = async (req, res) => {
+    //     try {
+    //         const start = new Date();
+    //         start.setHours(0, 0, 0, 0);
 
-            const end = new Date();
-            end.setHours(23, 59, 59, 999);
+    //         const end = new Date();
+    //         end.setHours(23, 59, 59, 999);
 
-            const sales = await Sale.find({
-                createdAt: { $gte: start, $lte: end }
-            })
+    //         const sales = await Sale.find({
+    //             createdAt: { $gte: start, $lte: end }
+    //         })
 
-            const revenue = sales.reduce(
-                (sum, sale) => sum + (sale.grandTotal || 0),
-                0
-            );
+    //         const revenue = sales.reduce(
+    //             (sum, sale) => sum + (sale.grandTotal || 0),
+    //             0
+    //         );
 
-            res.json({
-                orders: sales.length,
-                revenue,
+    //         res.json({
+    //             orders: sales.length,
+    //             revenue,
                 
-            });
-        } catch (error) {
-            res.status(500).json({
-                messsage:error.message
-            });
-        }
-    };
+    //         });
+    //     } catch (error) {
+    //         res.status(500).json({
+    //             message:error.message
+    //         });
+    //     }
+    // };
 
     // get recent sales
     exports.getRecentSales = async (req, res) => {
@@ -193,9 +196,10 @@ exports.getAllSales = async (req, res) => {
             const sales = await Sale.find()
                 .sort({ createdAt: -1 })
                 .limit(5)
-                .select("customerName grandTotal createdAt");
+                .select("invoiceNumber customerName grandTotal createdAt");
             
             res.json({
+                success: true,
                 sales
             });
         } catch (error) {
@@ -206,38 +210,41 @@ exports.getAllSales = async (req, res) => {
     };
 
     // weekly sale
-    exports.getWeeklySales = async (req, res) => {
-        try {
+    // exports.getWeeklySales = async (req, res) => {
+    //     try {
 
-            const lastWeek = new Date();
-            lastWeek.setDate(lastWeek.getDate() - 7);
+    //         const lastWeek = new Date();
+    //         lastWeek.setDate(lastWeek.getDate() - 7);
             
-            const sales = await Sale.aggregate([
-                {
-                    $match: {
-                        createdAt: {
-                            $gte: lastWeek
-                        }
-                    }
-                },
-                {
-                    $group: {
-                        _id: { $dayOfWeek: "$createdAt"},
-                        totalSales: { $sum: "$grandTotal" }
-                    }
-                },
-                {
-                    $sort: { _id: 1 }
-                }
+    //         const sales = await Sale.aggregate([
+    //             {
+    //                 $match: {
+    //                     createdAt: {
+    //                         $gte: lastWeek
+    //                     }
+    //                 }
+    //             },
+    //             {
+    //                 $group: {
+    //                     _id: { $dayOfWeek: "$createdAt"},
+    //                     totalSales: { $sum: "$grandTotal" }
+    //                 }
+    //             },
+    //             {
+    //                 $sort: { _id: 1 }
+    //             }
                 
-            ]);
+    //         ]);
 
-            res.json(sales);
-        } catch (error) {
-            console.error("Weekly Sales Error:", error);
-            res.status(500).json({
-                message: error.message
-            });
-        }
-    };
+    //         res.json({
+    //             success: true,
+    //             sales
+    //         });
+    //     } catch (error) {
+    //         console.error("Weekly Sales Error:", error);
+    //         res.status(500).json({
+    //             message: error.message
+    //         });
+    //     }
+    // };
 

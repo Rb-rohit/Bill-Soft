@@ -30,7 +30,7 @@ const Sidebar = () => {
                 </li>
 
                 <li className="flex items-center gap-3 hover:text-yellow-400 cursor-pointer">
-                    <Settings size={20} /> Settings
+                    <Link to={"/settings"} className="flex gap-3"><Settings size={20} /> Settings</Link>
                 </li>
             </ul>
         </div>

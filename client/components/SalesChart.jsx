@@ -10,15 +10,24 @@ const SalesChart = () => {
     useEffect(() => {
         const fetchWeeklySales = async () => {
             try {
+                const token = localStorage.getItem("token");
+
                 const res = await axios.get(
-                    "http://localhost:5000/api/sales/weekly"
+                    "http://localhost:5000/api/dashboard/stats",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
                 );
 
-                const days = ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"];
+                // const days = ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"];
 
-                const formatted = res.data.map(item => ({
-                    day: days[item._id - 1],
-                    sales: item.totalSales
+                const formatted = res.data.dailySales.map(item => ({
+                    day: new Date(item._id).toLocaleDateString("en-US",{
+                        weekday: "short"
+                    }),
+                    sales: item.revenue
                 }));
 
                 setData(formatted);

@@ -43,6 +43,7 @@ exports.getDashboardStats = async (req, res) => {
 
         //monthly sale chart
         const monthlySales = await Sale.aggregate([
+            { $match: match },
             {
                 $group: {
                     _id: { $month: "$createdAt" },
@@ -56,11 +57,13 @@ exports.getDashboardStats = async (req, res) => {
         const last7Days = new Date();
         last7Days.setDate(last7Days.getDate() - 7);
 
+        const dailyMatch = fromDate && toDate
+            ? match
+            : { createdAt: { $gte: last7Days } };
+
         const dailySales = await Sale.aggregate([
             {
-                $match: {
-                    createdAt: { $gte: last7Days }
-                }
+                $match: dailyMatch
             },
             {
                 $group: {
@@ -96,7 +99,7 @@ exports.getPaymentReport = async (req, res) => {
         const payments = await Sale.aggregate([
             {
                 $group: {
-                    _id: "$paymentMethod",
+                    _id: { $ifNull: ["$paymentMethod", "Unknown"] },
                     total: { $sum: "$grandTotal" }
                 }
             }

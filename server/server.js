@@ -7,7 +7,7 @@ const productRoutes = require("./routes/productRoutes");
 const saleRoutes = require("./routes/saleRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
-
+const settingsRoutes = require("./routes/settingsRoutes");
 
 dotenv.config();
 
@@ -23,6 +23,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/sales", saleRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/settings", settingsRoutes );
 
 
 connectDB();
